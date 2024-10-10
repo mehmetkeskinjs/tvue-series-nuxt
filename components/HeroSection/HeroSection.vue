@@ -51,10 +51,6 @@ import PlatformList from './PlatformList.vue';
 import SearchInput from './SearchInput.vue';
 import { platforms as platformData } from '../../assets/platforms.js';
 
-import napoleonImage from '@/assets/napoleon-bg.jpg';
-import jokerImage from '@/assets/joker-bg.jpg';
-import batmanImage from '@/assets/batman-bg.jpg';
-
 const heroMovieDetail = ref({});
 const platformList = ref([]);
 const activeBullet = ref(0);
@@ -64,19 +60,19 @@ let featuredMovies = [
         id: 1,
         title: 'napoleon',
         year: '2024',
-        image: napoleonImage,
+        image: '/napoleon-bg.jpg',
     },
     {
         id: 2,
         title: 'joker',
         year: '2019',
-        image: jokerImage,
+        image: '/joker-bg.jpg',
     },
     {
         id: 3,
         title: 'the batman',
         year: '2022',
-        image: batmanImage,
+        image: '/batman-bg.jpg',
     },
 ];
 

@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import GlobalInputSearchList from './GlobalInputSearchList.vue';
 
 const searchList = ref([]);
@@ -86,7 +86,6 @@ const performSearch = () => {
     searchMovies();
 };
 
-// Clean up the timeout when the component is unmounted
 onUnmounted(() => {
     if (searchTimeoutId.value) {
         clearTimeout(searchTimeoutId.value);
