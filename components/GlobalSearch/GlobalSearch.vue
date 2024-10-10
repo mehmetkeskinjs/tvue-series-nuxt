@@ -24,7 +24,7 @@
             class="absolute top-16 z-10 w-full bg-zinc-50 py-2 pl-[4.7rem] pr-8 outline-none transition-all focus-within:outline-none"
             v-model="searchQuery"
             @input="handleSearch"
-            @keyup.enter="s"
+            @keyup.enter="performSearch"
         />
 
         <GlobalInputSearchList
@@ -35,8 +35,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
+import { ref, watch } from 'vue';
 import GlobalInputSearchList from './GlobalInputSearchList.vue';
 
 const searchList = ref([]);
@@ -55,9 +54,13 @@ const options = {
 };
 
 const searchMovies = async () => {
+    if (searchQuery.value.trim() === '') {
+        searchList.value = [];
+        return;
+    }
     try {
         const response = await fetch(
-            `https://api.themoviedb.org/3/search/multi?query=${searchQuery.value}&include_adult=false&language=en-US&page=1`,
+            `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery.value)}&include_adult=false&language=en-US&page=1`,
             options,
         );
         const { results } = await response.json();
@@ -67,5 +70,26 @@ const searchMovies = async () => {
     }
 };
 
-const handleSearch = setTimeout(searchMovies, 500);
+const handleSearch = () => {
+    if (searchTimeoutId.value) {
+        clearTimeout(searchTimeoutId.value);
+    }
+    searchTimeoutId.value = setTimeout(searchMovies, 500);
+};
+
+const searchTimeoutId = ref(null);
+
+const performSearch = () => {
+    if (searchTimeoutId.value) {
+        clearTimeout(searchTimeoutId.value);
+    }
+    searchMovies();
+};
+
+// Clean up the timeout when the component is unmounted
+onUnmounted(() => {
+    if (searchTimeoutId.value) {
+        clearTimeout(searchTimeoutId.value);
+    }
+});
 </script>

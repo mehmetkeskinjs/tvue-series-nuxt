@@ -5,34 +5,33 @@
     <MoviesSlider
         title="Movies"
         :isMoviesLoading="isMoviesLoading"
-        :movies="moviesStore.movies"
+        :movies="movies"
         :movieKeyword="movieKeyword"
         @keyword-changed="updateMovieKeyword"
         @handle-favorite="handleFavorite"
     />
     <MoviesSlider
         title="Tv Shows"
-        :isMoviesLoading="isMoviesLoading"
-        :movies="seriesStore.seriesData"
+        :isMoviesLoading="isSeriesLoading"
+        :movies="series"
         :movieKeyword="seriesKeyword"
-        @keyword-changed="updateMovieKeyword"
+        @keyword-changed="updateSeriesKeyword"
         @handle-favorite="handleFavorite"
     />
 </template>
 
 <script setup>
-import { useMoviesStore } from './stores/useMoviesStore';
-import { useTvSeriesStore } from './stores/useTvSeriesStore';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import Header from './components/Header/Header.vue';
 import GlobalSearch from './components/GlobalSearch/GlobalSearch.vue';
 import HeroSection from './components/HeroSection/HeroSection.vue';
 import MoviesSlider from './components/MoviesSlider/MoviesSlider.vue';
 
-const moviesStore = useMoviesStore();
-const seriesStore = useTvSeriesStore();
 const isInputVisible = ref(false);
 const isMoviesLoading = ref(true);
+const isSeriesLoading = ref(true);
+const movies = ref([]);
+const series = ref([]);
 const movieKeyword = ref({ type: 'movie', defaultKey: 'popular' });
 const seriesKeyword = ref({ type: 'series', defaultKey: 'popular' });
 
@@ -51,8 +50,7 @@ const fetchMovies = async () => {
             options,
         );
         const { results } = await response.json();
-
-        moviesStore.setMovies(results);
+        movies.value = results;
     } catch (error) {
         console.error(error);
     } finally {
@@ -67,31 +65,30 @@ const fetchTVSeries = async () => {
             options,
         );
         const { results } = await response.json();
-
-        seriesStore.setSeries(results);
+        series.value = results;
     } catch (error) {
         console.error(error);
     } finally {
-        isMoviesLoading.value = false;
+        isSeriesLoading.value = false;
     }
 };
 
 const handleFavorite = (movieObj, type) => {
-    if (type === 'movie') {
-        moviesStore.toggleFavorite(movieObj);
-    } else if (type === 'series') {
-        seriesStore.toggleFavorite(movieObj);
+    const list = type === 'movie' ? movies : series;
+    const index = list.value.findIndex(item => item.id === movieObj.id);
+    if (index !== -1) {
+        list.value[index].isFavorite = !list.value[index].isFavorite;
     }
 };
 
-const updateMovieKeyword = (keyword, type) => {
-    if (type === 'movie') {
-        movieKeyword.value.defaultKey = keyword.replace(' ', '_');
-        fetchMovies();
-    } else if (type === 'series') {
-        seriesKeyword.value.defaultKey = keyword.replace(' ', '_');
-        fetchTVSeries();
-    }
+const updateMovieKeyword = (keyword) => {
+    movieKeyword.value.defaultKey = keyword.replace(' ', '_');
+    fetchMovies();
+};
+
+const updateSeriesKeyword = (keyword) => {
+    seriesKeyword.value.defaultKey = keyword.replace(' ', '_');
+    fetchTVSeries();
 };
 
 const toggleInput = () => {
@@ -106,6 +103,8 @@ const handleScroll = () => {
 
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
+    fetchMovies();
+    fetchTVSeries();
 });
 
 onUnmounted(() => {
@@ -113,11 +112,11 @@ onUnmounted(() => {
 });
 
 watch(
-    movieKeyword,
+    [movieKeyword, seriesKeyword],
     () => {
         fetchMovies();
         fetchTVSeries();
     },
-    { immediate: true },
+    { deep: true },
 );
 </script>
