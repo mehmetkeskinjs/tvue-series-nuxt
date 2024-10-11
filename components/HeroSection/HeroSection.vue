@@ -18,8 +18,6 @@
                     Discover your favorite movies or TV shows
                 </p>
 
-                <!-- bulletpoints -->
-
                 <SearchInput />
 
                 <div class="mt-8 flex items-center gap-3">
