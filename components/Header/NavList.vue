@@ -14,7 +14,7 @@ import NavLink from './NavLink.vue';
 const navLinks = [
     {
         linkText: 'Movies',
-        linkUrl: '#',
+        linkUrl: '/movies',
         hasSublist: true,
         sublist: [
             {
@@ -25,7 +25,7 @@ const navLinks = [
     },
     {
         linkText: 'Tv Shows',
-        linkUrl: '#',
+        linkUrl: '/tv-shows',
         hasSublist: false,
     },
 ];
