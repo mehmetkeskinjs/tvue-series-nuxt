@@ -4,6 +4,8 @@
             v-for="link in navLinks"
             :text="link.linkText"
             :link="link.linkUrl"
+            :has-sublist="link.hasSublist"
+            :sub-list="link.sublist"
         />
     </div>
 </template>
@@ -18,15 +20,43 @@ const navLinks = [
         hasSublist: true,
         sublist: [
             {
-                Popular: '#',
-                'Now Playing': '#',
+                name: 'Popular',
+                url: '/movies',
             },
+            {
+                name: 'Now Playing',
+                url: '/movies/now-playing',
+            },
+            {
+                name: 'Upcoming',
+                url: '/movies/upcoming',
+            },{
+                name: 'Top Rated',
+                url: '/movies/top-rated',
+            }
         ],
     },
     {
         linkText: 'Tv Shows',
         linkUrl: '/tv-shows',
-        hasSublist: false,
+        hasSublist: true,
+        sublist: [
+            {
+                name: 'Popular',
+                url: '/movies',
+            },
+            {
+                name: 'Now Playing',
+                url: '/movies/now-playing',
+            },
+            {
+                name: 'Upcoming',
+                url: '/movies/upcoming',
+            },{
+                name: 'Top Rated',
+                url: '/movies/top-rated',
+            }
+        ],
     },
 ];
 </script>
