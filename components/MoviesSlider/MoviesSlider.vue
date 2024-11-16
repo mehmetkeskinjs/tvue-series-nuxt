@@ -11,7 +11,7 @@
                     />
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 cursor-not-allowed">
                     <button
                         :class="{
                             'cursor-pointer bg-neutral-200 ring-neutral-300/20':
