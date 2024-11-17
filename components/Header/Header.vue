@@ -2,7 +2,7 @@
     <div
         class="absolute top-0 z-50 flex h-16 w-full items-center bg-transparent"
     >
-        <div class="container flex items-center justify-between px-12">
+        <div class="flex items-center justify-between px-12" :class="[isHeaderFull ? 'w-full' : 'container']">
             <Logo />
             <div class="flex items-center gap-6">
                 <NavList />
@@ -55,6 +55,7 @@ import NavList from './NavList.vue';
 
 const props = defineProps({
     isVisible: Boolean,
+    isHeaderFull: Boolean
 });
 
 const emit = defineEmits(['toggleInput']);

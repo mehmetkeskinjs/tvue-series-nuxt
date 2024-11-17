@@ -43,18 +43,18 @@ const navLinks = [
         sublist: [
             {
                 name: 'Popular',
-                url: '/',
+                url: '/tv-shows/popular',
             },
             {
-                name: 'Now Playing',
-                url: '/movies/now-playing',
+                name: 'Airing Today',
+                url: '/tv-shows/airing-today',
             },
             {
-                name: 'Upcoming',
-                url: '/movies/upcoming',
+                name: 'On TV',
+                url: '/tv-shows/on-the-air',
             },{
                 name: 'Top Rated',
-                url: '/movies/top-rated',
+                url: '/tv-shows/top-rated',
             }
         ],
     },

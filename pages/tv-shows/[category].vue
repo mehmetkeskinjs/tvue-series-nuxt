@@ -4,7 +4,7 @@
 
     <div class=" bg-gray-900 h-16"></div>
 
-    <div class="px-12 py-4 flex gap-4">
+    <div class="px-12 py-4 flex gap-4 justify-center">
         <!-- filters section -->
         <div class="bg-neutral-200/50 sticky h-fit top-4 left-0 rounded-lg p-4 max-w-72 flex flex-col items-center gap-4">
             <!-- Sort dropdown -->
@@ -42,7 +42,7 @@
             <!-- keyword filter -->
             <div class="flex flex-col w-full gap-2 text-sm font-medium">
                 <span>Filter by word</span>
-                <input v-model="filteredKeyword" class="flex items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
+                <input v-model="filteredTvShowKeyword" class="flex items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
             </div>
 
             <!-- Date range filter -->
@@ -118,21 +118,21 @@
 
         <!-- results section -->
         <div class="w-full">
-            <div v-if="isMoviesLoading" class="flex gap-2 pb-4 pt-6">
+            <div v-if="isTvShowsLoading" class="flex gap-2 pb-4 pt-6">
                 <MovieCardSkeleton v-for="n in 4" :key="n" />
             </div>
             <ul
-                v-else-if="movies.length > 0"
+                v-else-if="tvShows.length > 0"
                 ref="sliderContainer"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-4"
             >
                 <MovieCard
-                    v-for="movie in movies"
-                    :key="movie.id"
-                    :movie="movie"
-                    :data-id="movie.id"
+                    v-for="tvShow in tvShows"
+                    :key="tvShow.id"
+                    :movie="tvShow"
+                    :data-id="tvShow.id"
                     @handle-favorite="handleFavorite"
-                    :movieKeyword="movieKeyword"
+                    :movieKeyword="tvShowKeyword"
                 />
             </ul>
             
@@ -149,14 +149,14 @@ import MovieCard from '../../components/MoviesSlider/MovieCard.vue';
 
 const isHeaderFull = ref(true)
 const isInputVisible = ref(false);
-const movies = ref([]);
-const isMoviesLoading = ref(true);
-const movieKeyword = ref({ type: 'movie', defaultKey: 'popular' });
+const tvShows = ref([]);
+const isTvShowsLoading = ref(true);
+const tvShowKeyword = ref({ type: 'tv', defaultKey: 'popular' });
 const selectedGenres = ref([]);
 const genresArr = ref([]);
 const sortBy = ref('');
-const allMovies = ref([]);
-const filteredKeyword = ref('');
+const allTvShows = ref([]);
+const filteredTvShowKeyword = ref('');
 const dateRange = ref({
     from: '',
     to: ''
@@ -167,25 +167,25 @@ const ratingRange = ref({
 });
 
 const minDate = computed(() => {
-    if (!allMovies.value.length) return '';
-    return allMovies.value.reduce((min, movie) => {
-        return movie.release_date < min ? movie.release_date : min;
-    }, allMovies.value[0].release_date);
+    if (!allTvShows.value.length) return '';
+    return allTvShows.value.reduce((min, tvShow) => {
+        return tvShow.first_air_date < min ? tvShow.first_air_date : min;
+    }, allTvShows.value[0].first_air_date);
 });
 
 const maxDate = computed(() => {
-    if (!allMovies.value.length) return '';
-    return allMovies.value.reduce((max, movie) => {
-        return movie.release_date > max ? movie.release_date : max;
-    }, allMovies.value[0].release_date);
+    if (!allTvShows.value.length) return '';
+    return allTvShows.value.reduce((max, tvShow) => {
+        return tvShow.first_air_date > max ? tvShow.first_air_date : max;
+    }, allTvShows.value[0].first_air_date);
 });
 
-const filteredMovies = computed(() => {
-    let result = [...allMovies.value];
+const filteredTvShows = computed(() => {
+    let result = [...allTvShows.value];
     
     if (selectedGenres.value.length > 0) {
-        result = result.filter(movie => 
-            selectedGenres.value.every(genreId => movie?.genre_ids.includes(genreId))
+        result = result.filter(tvShow => 
+            selectedGenres.value.every(genreId => tvShow?.genre_ids.includes(genreId))
         );
     }
 
@@ -197,34 +197,34 @@ const filteredMovies = computed(() => {
             result.sort((a, b) => b.vote_average - a.vote_average);
             break;
         case 'release_date_asc':
-            result.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+            result.sort((a, b) => new Date(a.first_air_date) - new Date(b.first_air_date));
             break;
         case 'release_date_desc':
-            result.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+            result.sort((a, b) => new Date(b.first_air_date) - new Date(a.first_air_date));
             break;
     }
 
-    if (filteredKeyword.value.length > 0) {
-        result = result.filter(movie => 
-            normalizeString(movie?.title).includes(normalizeString(filteredKeyword.value))
+    if (filteredTvShowKeyword.value.length > 0) {
+        result = result.filter(tvShow => 
+            normalizeString(tvShow?.original_name).includes(normalizeString(filteredTvShowKeyword.value))
         );
     }
 
     if (dateRange.value.from) {
-        result = result.filter(movie => 
-            movie.release_date >= dateRange.value.from
+        result = result.filter(tvShow => 
+            tvShow.first_air_date >= dateRange.value.from
         );
     }
     if (dateRange.value.to) {
-        result = result.filter(movie => 
-            movie.release_date <= dateRange.value.to
+        result = result.filter(tvShow => 
+            tvShow.first_air_date <= dateRange.value.to
         );
     }
 
     if (ratingRange.value.min > 0 || ratingRange.value.max < 10) {
-        result = result.filter(movie => 
-            movie.vote_average >= ratingRange.value.min && 
-            movie.vote_average <= ratingRange.value.max
+        result = result.filter(tvShow => 
+            tvShow.vote_average >= ratingRange.value.min && 
+            tvShow.vote_average <= ratingRange.value.max
         );
     }
     
@@ -233,9 +233,9 @@ const filteredMovies = computed(() => {
 
 const categoryEndpoints = {
   'popular': 'popular',
-  'now-playing': 'now_playing',
+  'airing-today': 'airing_today',
   'top-rated': 'top_rated',
-  'upcoming': 'upcoming'
+  'on-tv': 'on_the_air'
 };
 
 const route = useRoute();
@@ -254,33 +254,33 @@ const options = {
     },
 };
 
-const fetchMovies = async () => {
-  isMoviesLoading.value = true;
+const fetchTvShows = async () => {
+  isTvShowsLoading.value = true;
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${currentEndpoint.value}?language=en-US&page=1`,
+      `https://api.themoviedb.org/3/tv/${currentEndpoint.value}?language=en-US&page=1`,
       options,
     );
     const { results } = await response.json();
-    allMovies.value = results;
-    movies.value = results;
+    allTvShows.value = results;
+    tvShows.value = results;
     
-    const maxReleaseDate = results.reduce((max, movie) => {
-        return movie.release_date > max ? movie.release_date : max;
-    }, results[0].release_date);
-    dateRange.value.to = maxReleaseDate;
+    const maxFirstAirDate = results.reduce((max, tvShow) => {
+        return tvShow.first_air_date > max ? tvShow.first_air_date : max;
+    }, results[0].first_air_date);
+    dateRange.value.to = maxFirstAirDate;
     
   } catch (error) {
     console.error(error);
   } finally {
-    isMoviesLoading.value = false;
+    isTvShowsLoading.value = false;
   }
 };
 
 const fetchGenres = async () => {
     try {
         const response = await fetch (
-            'https://api.themoviedb.org/3/genre/movie/list?language=en',
+            'https://api.themoviedb.org/3/genre/tv/list?language=en',
             options
         );
         const { genres } = await response.json();
@@ -290,16 +290,16 @@ const fetchGenres = async () => {
     }
 };
 
-const handleFavorite = (movieObj, type) => {
-    const list = type === 'movie' ? movies : series;
-    const index = list.value.findIndex(item => item.id === movieObj.id);
+const handleFavorite = (tvShowObj, type) => {
+    const list = type === 'tv' ? tvShows : series;
+    const index = list.value.findIndex(item => item.id === tvShowObj.id);
     if (index !== -1) {
         list.value[index].isFavorite = !list.value[index].isFavorite;
     }
 };
 
 const handleSearch = () => {
-    movies.value = filteredMovies.value;
+    tvShows.value = filteredTvShows.value;
 };
 
 const toggleInput = () => {
@@ -317,7 +317,7 @@ const toggleGenre = (id) => {
 
 watchEffect(() => {
   if (route.params.category) {
-    fetchMovies();
+    fetchTvShows();
   }
   fetchGenres();
 });
@@ -342,7 +342,7 @@ const normalizeString = (str) => {
 const hasActiveFilters = computed(() => {
     return selectedGenres.value.length > 0 || 
            sortBy.value !== '' || 
-           filteredKeyword.value !== '' ||
+           filteredTvShowKeyword.value !== '' ||
            dateRange.value.from !== '' ||
            ratingRange.value.min > 0 ||
            ratingRange.value.max < 10;
@@ -352,7 +352,7 @@ const hasActiveFilters = computed(() => {
 const clearFilters = () => {
     selectedGenres.value = [];
     sortBy.value = '';
-    filteredKeyword.value = '';
+    filteredTvShowKeyword.value = '';
     dateRange.value = {
         from: '',
         to: maxDate.value
@@ -361,7 +361,7 @@ const clearFilters = () => {
         min: 0,
         max: 10
     };
-    movies.value = allMovies.value;
+    tvShows.value = allTvShows.value;
 };
 
 // Add methods to ensure min is always less than max
