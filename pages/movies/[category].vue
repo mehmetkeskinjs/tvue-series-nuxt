@@ -6,7 +6,7 @@
 
     <div class="px-12 py-4 flex gap-4">
         <!-- filters section -->
-        <div class="bg-neutral-200/50 sticky h-fit top-4 left-0 rounded-lg p-4 max-w-72 flex flex-col items-center gap-4">
+        <div class=" bg-neutral-200/50 sticky h-fit top-4 left-0 rounded-lg p-4 max-w-72 flex flex-col items-center gap-4">
             <!-- Sort dropdown -->
             <div class="flex flex-col gap-2 w-full">
                 <label class="text-sm font-medium">Sort by</label>
@@ -30,7 +30,7 @@
                         :class="[
                             'px-3 py-1 rounded-full text-sm font-medium transition-colors',
                             selectedGenres.includes(genre.id)
-                                ? 'bg-black text-white'
+                                ? 'bg-neutral-900 text-white'
                                 : 'bg-white hover:bg-gray-100'
                         ]"
                     >
@@ -42,7 +42,7 @@
             <!-- keyword filter -->
             <div class="flex flex-col w-full gap-2 text-sm font-medium">
                 <span>Filter by word</span>
-                <input v-model="filteredKeyword" class="flex items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
+                <input v-model="filteredKeyword" class="flex outline-neutral-900 items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
             </div>
 
             <!-- Date range filter -->

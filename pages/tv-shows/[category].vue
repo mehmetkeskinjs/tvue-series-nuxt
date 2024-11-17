@@ -30,7 +30,7 @@
                         :class="[
                             'px-3 py-1 rounded-full text-sm font-medium transition-colors',
                             selectedGenres.includes(genre.id)
-                                ? 'bg-black text-white'
+                                ? 'bg-neutral-900 text-white'
                                 : 'bg-white hover:bg-gray-100'
                         ]"
                     >
@@ -42,7 +42,7 @@
             <!-- keyword filter -->
             <div class="flex flex-col w-full gap-2 text-sm font-medium">
                 <span>Filter by word</span>
-                <input v-model="filteredTvShowKeyword" class="flex items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
+                <input v-model="filteredTvShowKeyword" class="flex outline-neutral-900 items-center w-full rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
             </div>
 
             <!-- Date range filter -->
@@ -264,12 +264,6 @@ const fetchTvShows = async () => {
     const { results } = await response.json();
     allTvShows.value = results;
     tvShows.value = results;
-    
-    const maxFirstAirDate = results.reduce((max, tvShow) => {
-        return tvShow.first_air_date > max ? tvShow.first_air_date : max;
-    }, results[0].first_air_date);
-    dateRange.value.to = maxFirstAirDate;
-    
   } catch (error) {
     console.error(error);
   } finally {
@@ -332,23 +326,22 @@ const normalizeString = (str) => {
     return str
         .toLowerCase()
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-        .replace(/[^a-z0-9\s]/g, '')     // Remove special characters
-        .replace(/\s+/g, '')             // Remove spaces
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')    
+        .replace(/\s+/g, '')            
         .trim();
 };
 
-// Add computed property to check if any filters are active
 const hasActiveFilters = computed(() => {
     return selectedGenres.value.length > 0 || 
            sortBy.value !== '' || 
            filteredTvShowKeyword.value !== '' ||
            dateRange.value.from !== '' ||
+           dateRange.value.to !== '' ||
            ratingRange.value.min > 0 ||
            ratingRange.value.max < 10;
 });
 
-// Add clearFilters function
 const clearFilters = () => {
     selectedGenres.value = [];
     sortBy.value = '';
@@ -364,7 +357,6 @@ const clearFilters = () => {
     tvShows.value = allTvShows.value;
 };
 
-// Add methods to ensure min is always less than max
 const updateMax = () => {
     if (ratingRange.value.max < ratingRange.value.min) {
         ratingRange.value.max = ratingRange.value.min;
