@@ -21,7 +21,7 @@ const navLinks = [
         sublist: [
             {
                 name: 'Popular',
-                url: '/movies',
+                url: '/movies/popular',
             },
             {
                 name: 'Now Playing',
@@ -43,7 +43,7 @@ const navLinks = [
         sublist: [
             {
                 name: 'Popular',
-                url: '/movies',
+                url: '/',
             },
             {
                 name: 'Now Playing',
