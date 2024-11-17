@@ -42,13 +42,61 @@
                 <input v-model="filteredKeyword" class="flex items-center w-60 rounded-lg h-10 px-4 placeholder:italic placeholder:text-sm" placeholder="Batman"/>
             </div>
 
-            <div class="flex w-full items-center">
+            <!-- Date range filter -->
+            <div class="flex flex-col gap-2 w-full">
+                <span class="text-sm font-medium">Release date range:</span>
+                <div class="flex gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs">From:</label>
+                        <input 
+                            type="date" 
+                            v-model="dateRange.from"
+                            :min="minDate"
+                            :max="maxDate"
+                            class="rounded-md px-2 py-1 text-sm h-10 w-60 bg-white"
+                        />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs">To:</label>
+                        <input 
+                            type="date" 
+                            v-model="dateRange.to"
+                            :min="minDate"
+                            :max="maxDate"
+                            class="rounded-md px-2 py-1 text-sm h-10 w-60 bg-white"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating range filter -->
+            <div class="flex flex-col gap-2 w-full">
+                <span class="text-sm font-medium">Minimum rating: {{ ratingRange }}⭐</span>
+                <input 
+                    type="range" 
+                    v-model="ratingRange" 
+                    min="0" 
+                    max="10" 
+                    step="0.5"
+                    class="w-60"
+                />
+            </div>
+
+            <!-- Search and Clear buttons -->
+            <div class="flex w-full items-center gap-4">
                 <button
-                    v-if="isFiltered"
+                    v-if="hasActiveFilters"
                     @click="handleSearch"
                     class="relative flex h-10 w-60 items-center justify-center rounded-lg bg-gradient-to-r from-zinc-950 to-zinc-900 px-4 text-sm font-normal text-slate-200 shadow before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,theme(colors.white/.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease] hover:before:bg-[position:-100%_0,0_0] hover:before:duration-[1500ms] focus:outline-none focus:ring focus:ring-slate-500/50 focus-visible:outline-none focus-visible:ring focus-visible:ring-slate-500/50"
                 >
                     Search
+                </button>
+                <button
+                    v-if="hasActiveFilters"
+                    @click="clearFilters"
+                    class="flex h-10 w-60 items-center justify-center rounded-lg px-4 underline text-sm font-normal text-zinc-700 hover:bg-zinc-50"
+                >
+                    Clear Filters
                 </button>
             </div>
         </div>
@@ -91,9 +139,27 @@ const movieKeyword = ref({ type: 'movie', defaultKey: 'popular' });
 const selectedGenres = ref([]);
 const genresArr = ref([]);
 const sortBy = ref('');
-const isFiltered = ref(true)
 const allMovies = ref([]);
 const filteredKeyword = ref('');
+const dateRange = ref({
+    from: '',
+    to: ''
+});
+const ratingRange = ref(0);
+
+const minDate = computed(() => {
+    if (!allMovies.value.length) return '';
+    return allMovies.value.reduce((min, movie) => {
+        return movie.release_date < min ? movie.release_date : min;
+    }, allMovies.value[0].release_date);
+});
+
+const maxDate = computed(() => {
+    if (!allMovies.value.length) return '';
+    return allMovies.value.reduce((max, movie) => {
+        return movie.release_date > max ? movie.release_date : max;
+    }, allMovies.value[0].release_date);
+});
 
 const filteredMovies = computed(() => {
     let result = [...allMovies.value];
@@ -122,6 +188,23 @@ const filteredMovies = computed(() => {
     if (filteredKeyword.value.length > 0) {
         result = result.filter(movie => 
             normalizeString(movie?.title).includes(normalizeString(filteredKeyword.value))
+        );
+    }
+
+    if (dateRange.value.from) {
+        result = result.filter(movie => 
+            movie.release_date >= dateRange.value.from
+        );
+    }
+    if (dateRange.value.to) {
+        result = result.filter(movie => 
+            movie.release_date <= dateRange.value.to
+        );
+    }
+
+    if (ratingRange.value > 0) {
+        result = result.filter(movie => 
+            movie.vote_average >= ratingRange.value
         );
     }
     
@@ -161,6 +244,12 @@ const fetchMovies = async () => {
     const { results } = await response.json();
     allMovies.value = results;
     movies.value = results;
+    
+    const maxReleaseDate = results.reduce((max, movie) => {
+        return movie.release_date > max ? movie.release_date : max;
+    }, results[0].release_date);
+    dateRange.value.to = maxReleaseDate;
+    
   } catch (error) {
     console.error(error);
   } finally {
@@ -227,5 +316,27 @@ const normalizeString = (str) => {
         .replace(/[^a-z0-9\s]/g, '')     // Remove special characters
         .replace(/\s+/g, '')             // Remove spaces
         .trim();
+};
+
+// Add computed property to check if any filters are active
+const hasActiveFilters = computed(() => {
+    return selectedGenres.value.length > 0 || 
+           sortBy.value !== '' || 
+           filteredKeyword.value !== '' ||
+           dateRange.value.from !== '' ||
+           ratingRange.value > 0;
+});
+
+// Add clearFilters function
+const clearFilters = () => {
+    selectedGenres.value = [];
+    sortBy.value = '';
+    filteredKeyword.value = '';
+    dateRange.value = {
+        from: '',
+        to: maxDate.value
+    };
+    ratingRange.value = 0;
+    movies.value = allMovies.value;
 };
 </script>
