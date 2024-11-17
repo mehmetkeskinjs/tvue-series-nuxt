@@ -12,7 +12,7 @@
             </svg>
         </div>
         
-        <div v-if="hasSublist" class="absolute hidden group-hover:flex flex-col top-full left-0 w-48 bg-white rounded-md shadow-lg py-1">
+        <div v-if="hasSublist" class="absolute hidden group-hover:flex flex-col w-40 top-full left-0 bg-white rounded-md shadow-lg py-1 ">
             <NuxtLink v-for="item in subList" :to="item.url" class="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 {{ item.name }}
             </NuxtLink>

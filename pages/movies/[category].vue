@@ -264,12 +264,6 @@ const fetchMovies = async () => {
     const { results } = await response.json();
     allMovies.value = results;
     movies.value = results;
-    
-    const maxReleaseDate = results.reduce((max, movie) => {
-        return movie.release_date > max ? movie.release_date : max;
-    }, results[0].release_date);
-    dateRange.value.to = maxReleaseDate;
-    
   } catch (error) {
     console.error(error);
   } finally {
@@ -332,23 +326,22 @@ const normalizeString = (str) => {
     return str
         .toLowerCase()
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-        .replace(/[^a-z0-9\s]/g, '')     // Remove special characters
-        .replace(/\s+/g, '')             // Remove spaces
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')    
+        .replace(/\s+/g, '')            
         .trim();
 };
 
-// Add computed property to check if any filters are active
 const hasActiveFilters = computed(() => {
     return selectedGenres.value.length > 0 || 
            sortBy.value !== '' || 
            filteredKeyword.value !== '' ||
            dateRange.value.from !== '' ||
+           dateRange.value.to !== '' ||
            ratingRange.value.min > 0 ||
            ratingRange.value.max < 10;
 });
 
-// Add clearFilters function
 const clearFilters = () => {
     selectedGenres.value = [];
     sortBy.value = '';
@@ -364,7 +357,6 @@ const clearFilters = () => {
     movies.value = allMovies.value;
 };
 
-// Add methods to ensure min is always less than max
 const updateMax = () => {
     if (ratingRange.value.max < ratingRange.value.min) {
         ratingRange.value.max = ratingRange.value.min;
