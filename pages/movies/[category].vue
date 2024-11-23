@@ -20,7 +20,7 @@
             </div>
 
             <!-- Genre badges -->
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2 w-full">
                 <span class="text-sm font-medium">Genres</span>
                 <div class="flex flex-wrap gap-2">
                     <button
