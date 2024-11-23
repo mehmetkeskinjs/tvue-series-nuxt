@@ -2,7 +2,6 @@
     <Header :isVisible="isInputVisible" @toggleInput="toggleInput" />
     <GlobalSearch :isVisible="isInputVisible" />
     <HeroSection />
-    <span>Deneme</span>
     <MoviesSlider
         title="Movies"
         :isMoviesLoading="isMoviesLoading"
