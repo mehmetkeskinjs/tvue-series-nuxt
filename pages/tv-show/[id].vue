@@ -4,22 +4,22 @@
 
     <div class="bg-gray-900 h-16"></div>
 
-    <div v-if="movieData" class="relative pb-10">
+    <div v-if="tvSeriesData" class="relative pb-10">
         <div class="relative w-full h-[600px]">
             <div 
                 class="absolute inset-0 bg-cover bg-center"
-                :style="`background-image: url('https://media.themoviedb.org/t/p/w1920_and_h800_multi_faces${movieData.backdrop_path}')`"
+                :style="`background-image: url('https://media.themoviedb.org/t/p/w1920_and_h800_multi_faces${tvSeriesData.backdrop_path}')`"
             >
                 <div class="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-900/30"></div>
             </div>
         </div>
 
-        <div class="px-20 absolute top-12 w-[90%]">
+        <div class="absolute top-12 w-[90%] px-20">
             <div class="flex gap-8">
                 <div class="w-80">
                     <img 
-                        :src="`https://media.themoviedb.org/t/p/w600_and_h900_bestv2${movieData.poster_path}`"
-                        :alt="movieData.title"
+                        :src="`https://media.themoviedb.org/t/p/w600_and_h900_bestv2${tvSeriesData.poster_path}`"
+                        :alt="tvSeriesData.name"
                         class="w-full rounded-lg shadow-lg"
                     />
                 </div>
@@ -27,31 +27,31 @@
                 <div class="flex-1">
                     <h1 class="text-4xl font-bold mb-4 text-white">
                         <a 
-                            v-if="movieData.homepage" 
-                            :href="movieData.homepage"
+                            v-if="tvSeriesData.homepage" 
+                            :href="tvSeriesData.homepage"
                             target="_blank"
                             class="hover:text-blue-500 transition-colors"
                         >
-                            {{ movieData.title }}
+                            {{ tvSeriesData.name }}
                         </a>
-                        <span v-else>{{ movieData.title }}</span>
+                        <span v-else>{{ tvSeriesData.title }}</span>
                         <div class="mt-2">
-                            <span class=" text-orange-700">{{ movieData.vote_average.toFixed(2) }}</span> <span class="text-2xl">/ 10</span>
+                            <span class=" text-orange-700">{{ tvSeriesData.vote_average.toFixed(2) }}</span> <span class="text-2xl">/ 10</span>
                         </div>
                     </h1>
 
-                    <div class="mb-4 text-white max-w-[60%]">{{ movieData.overview }}</div>
+                    <div class="mb-4 text-white max-w-[60%]">{{ tvSeriesData.overview }}</div>
 
                     <p class="text-lg mb-4 text-white">
-                        <span class="font-semibold">Release Date:</span> 
-                        {{ new Date(movieData.release_date).toLocaleDateString() }}
+                        <span class="font-semibold">First Air Date:</span> 
+                        {{ new Date(tvSeriesData.first_air_date).toLocaleDateString() }}
                     </p>
 
                     <div class="mb-4">
                         <span class="font-semibold text-white">Genres:</span>
                         <div class="flex gap-2 mt-2">
                             <span 
-                                v-for="genre in movieData.genres" 
+                                v-for="genre in tvSeriesData.genres" 
                                 :key="genre.id"
                                 class="px-3 py-1 bg-gray-700 rounded-full text-sm text-white"
                             >
@@ -62,12 +62,16 @@
 
                     <div class="mt-6 max-w-[25%] text-white absolute right-0 top-0 w-fit bg-black/40 p-4 rounded-xl">
                         <h3 class="text-xl mb-4">Additional Informations</h3>
-                        <p class="mb-3"><span class="font-semibold">Status:</span> <span class="text-white/70 font-light ml-1">{{ movieData.status }}</span></p>
-                        <p class="mb-3"><span class="font-semibold">Language:</span> <span class="text-white/70 font-light ml-1">{{ movieData.original_language.toUpperCase() }}</span></p>
-                        <p class="mb-3"><span class="font-semibold">Tagline:</span> <span class="text-white/70 font-light ml-1">{{ movieData.tagline }}</span></p>
+                        <p class="mb-3"><span class="font-semibold">Status:</span> <span class="text-white/70 font-light ml-1">{{ tvSeriesData.status }}</span></p>
+                        <p class="mb-3"><span class="font-semibold">Language:</span> <span class="text-white/70 font-light ml-1">{{ tvSeriesData.original_language.toUpperCase() }}</span></p>
+                        <p class="mb-3"><span class="font-semibold">Tagline:</span> <span class="text-white/70 font-light ml-1">{{ tvSeriesData.tagline }}</span></p>
+                        <p class="mb-3">
+                            <span class="font-semibold">Number of Season:</span> 
+                            <span class="text-white/70 font-light ml-1">{{ tvSeriesData.number_of_seasons }}</span>
+                        </p>
                         <p>
-                            <span class="font-semibold">Runtime:</span> 
-                            <span class="text-white/70 font-light ml-1">{{ Math.floor(movieData.runtime / 60) }}hr {{ movieData.runtime % 60 }}min</span>
+                            <span class="font-semibold">Number of Episodes:</span> 
+                            <span class="text-white/70 font-light ml-1">{{ tvSeriesData.number_of_episodes }}</span>
                         </p>
                     </div>
                 </div>
@@ -113,7 +117,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const isHeaderFull = ref(true);
 const isInputVisible = ref(false);
-const movieData = ref(null);
+const tvSeriesData = ref(null);
 const castData = ref([]);
 
 const toggleInput = () => {
@@ -121,10 +125,10 @@ const toggleInput = () => {
 };
 
 onMounted(async () => {
-    const movieId = route.params.id;
+    const tvSeriesId = route.params.id;
     try {
-        const movieUrl = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
-        const movieOptions = {
+        const tvSeriesUrl = `https://api.themoviedb.org/3/tv/${tvSeriesId}?language=en-US`;
+        const tvSeriesOptions = {
             method: 'GET',
             headers: {
                 accept: 'application/json',
@@ -132,15 +136,17 @@ onMounted(async () => {
             }
         };
 
-        const movieResponse = await fetch(movieUrl, movieOptions);
-        movieData.value = await movieResponse.json();
-
-        const castUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
-        const castResponse = await fetch(castUrl, movieOptions);
+        const tvSeriesResponse = await fetch(tvSeriesUrl, tvSeriesOptions);
+        tvSeriesData.value = await tvSeriesResponse.json();
+        
+        const castUrl = `https://api.themoviedb.org/3/tv/${tvSeriesId}/credits?language=en-US`;
+        const castResponse = await fetch(castUrl, tvSeriesOptions);
         const castDataResponse = await castResponse.json();
         castData.value = castDataResponse.cast;
+
+        console.log(tvSeriesData.value)
     } catch (error) {
-        console.error('Error fetching movie data:', error);
+        console.error('Error fetching TV series data:', error);
     }
 });
 </script>

@@ -2,9 +2,10 @@
     <div
         class="absolute top-[6.5rem] z-50 w-full border-t border-t-zinc-700/20 bg-white"
     >
-        <div
+        <NuxtLink
             v-for="(item, index) in array"
             :key="index"
+            :to="item.media_type === 'tv' ? `/tv-show/${item.id}` : item.media_type === 'movie' ? `/movie/${item.id}` : '#'"
             class="flex cursor-pointer gap-4 border-b border-b-zinc-700/20 px-10 py-2 hover:bg-zinc-200/40"
         >
             <div class="text-zinc-800">
@@ -66,7 +67,7 @@
                     v-html="generateNewName(item?.title)"
                 ></p>
             </div>
-        </div>
+        </NuxtLink>
     </div>
 </template>
 

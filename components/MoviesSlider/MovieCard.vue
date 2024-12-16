@@ -1,6 +1,6 @@
 <template>
     <NuxtLink
-        :to="`/movie/${movie.id}`"
+        :to="`/${movieType === 'movie' ? 'movie' : 'tv-show'}/${movie.id}`"
         class="relative min-w-[250px] cursor-pointer snap-start overflow-hidden rounded-3xl bg-white text-neutral-500 shadow-lg transition duration-200 hover:bg-neutral-200/50"
     >
     <button
