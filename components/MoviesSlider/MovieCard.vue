@@ -1,9 +1,9 @@
 <template>
-    <div
-        href="#"
+    <NuxtLink
+        :to="`/movie/${movie.id}`"
         class="relative min-w-[250px] cursor-pointer snap-start overflow-hidden rounded-3xl bg-white text-neutral-500 shadow-lg transition duration-200 hover:bg-neutral-200/50"
     >
-        <button
+    <button
             v-if="!movie.isFavorite"
             class="absolute right-4 top-4 z-20 text-zinc-500/70 transition hover:text-zinc-900"
             @click="setFavorite(movie, movieType)"
@@ -69,7 +69,7 @@
                 >
             </span>
         </div>
-    </div>
+</NuxtLink>
 </template>
 
 <script setup>
